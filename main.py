@@ -1,21 +1,21 @@
 import os
 import re
 import requests
+import bs4
 from bs4 import BeautifulSoup
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
 from langchain_core.prompts import PromptTemplate
-from langchain_openai import OpenAI
-from langchain_google_genai import ChatGoogleGenerativeAI
-from dotenv import load_dotenv
+from langchain_openai import OpenAI, OpenAIEmbeddings, ChatOpenAI
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_chroma import Chroma
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
 
-load_dotenv()
 
-openai_api_key = os.environ['OPENAI_API_KEY']
-gemini_api_key = os.environ['GEMINI_API_KEY']
-
-llm = OpenAI(api_key=openai_api_key, max_tokens=2000)
-#llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key=gemini_api_key)
+os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
+keyword = "AI in education"
 
 def parse_links(search_results: str):
     print("-----------------------------------")
@@ -23,14 +23,63 @@ def parse_links(search_results: str):
     return re.findall(r'link:\s*(https?://[^\],\s]+)', search_results)
 
 
-def generate_blog(keyword, context):
+def save_file(content: str, filename: str):
+    print("-----------------------------------")
+    print("Saving file...")
+    with open(filename, 'w') as f:
+        f.write(content)
+    print(f" 🥳 File saved as {filename}")
+
+def get_links(keyword):
     try:
         print("-----------------------------------")
-        print("Generating blog post ...")
-        template = """
+        print("Getting links ...")
+
+        wrapper = DuckDuckGoSearchAPIWrapper(max_results=2)
+        search = DuckDuckGoSearchResults(api_wrapper=wrapper)
+        results = search.run(tool_input=keyword)
+
+        links = []
+
+        for link in parse_links(results):
+            links.append(link)
+        
+        return links
+    
+    except Exception as e:
+        print(f"An error occurred while getting links: {e}")
+        return []
+
+# step 1: Load documents
+bs4_strainer = bs4.SoupStrainer(('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'))
+document_loader = WebBaseLoader(
+    web_path=(get_links(keyword=keyword))
+)
+
+docs = document_loader.load()
+
+# step 2: text splitting
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=200,
+    add_start_index=True,
+)
+
+splits = splitter.split_documents(docs)
+
+# step 3: Indexing and vector storage
+vector_store = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
+
+# step 4: retrieval
+retriever = vector_store.as_retriever(search_type="similarity", search_kwards={"k": 6})
+
+# step 5 : Generation
+llm = ChatOpenAI()
+
+template = """
         Given the following information, generate a blog post
         
-        Write a full blog post that will rank for the following keywords: {keyword}
+        Write a full blog post that will rank for the following keywords: {question}
         
         Instructions:
         
@@ -60,121 +109,20 @@ def generate_blog(keyword, context):
         
         Please ensure proper and standard markdown formatting always.
         
-        Context:
-
-        The following information is summaries from blog posts with similar titles, use it to inform your writing style and content.
-        
-        {context}
-        
         """
 
-        prompt = PromptTemplate(template=template, input_variables=["keyword", "context"])
-        chain = prompt | llm
+prompt = PromptTemplate.from_template(template=template)
 
-        outline_response = chain.invoke({"keyword": keyword, "context": context})
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
 
-        return outline_response
+chain = (
+    { "context" : retriever | format_docs, "question" : RunnablePassthrough()}
+    | prompt
+    | llm
+    | StrOutputParser()
+    )
 
-    except Exception as e:
-        print(f"An error occurred while generating the blog post: {e}")
-        return None
+response = chain.invoke(input=keyword)
 
-def save_file(content: str, filename: str):
-    print("-----------------------------------")
-    print("Saving file...")
-    with open(filename, 'w') as f:
-        f.write(content)
-    print(f" 🥳 File saved as {filename}")
-
-def get_links(keyword):
-    try:
-        print("-----------------------------------")
-        print("Getting links ...")
-
-        wrapper = DuckDuckGoSearchAPIWrapper(max_results=2)
-        search = DuckDuckGoSearchResults(api_wrapper=wrapper)
-        results = search.run(tool_input=keyword)
-
-        links = []
-
-        for link in parse_links(results):
-            links.append(link)
-        
-        return links
-    
-    except Exception as e:
-        print(f"An error occurred while getting links: {e}")
-        return []
-
-def get_text_content(link):
-    print("-----------------------------------")
-    print(f"Getting page content from {link} ...")
-    
-    try:
-        response = requests.get(link)
-        response.raise_for_status()
-
-        soup = BeautifulSoup(response.content, 'html.parser')
-
-        text_components = soup.find_all(['p', 'h1', 'h2', 'h3'])
-        
-        text = "\n".join([t.get_text() for t in text_components])
-        
-        print(text)
-        
-        summarize_page(text)
-
-        return text
-    
-    except requests.exceptions.RequestException as e:
-        print(f"An error occurred while fetching the page: {e}")
-        return ""
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return ""
-
-def summarize_page(text):
-    try:
-        print("-----------------------------------")
-        print(f"Summarizing page content ...")
-
-        prompt = PromptTemplate(
-            input_variables=["text"],
-            template="""
-                You are a proficient summarizer tasked with condensing blog posts into concise and neat three-paragraph summaries. Your summaries should preserve the key ideas, structure, and tone of the original post. Here’s what you need to do:
-
-                Read the provided blog post carefully.
-                Identify and extract the main ideas and supporting details.
-                Condense the information into three coherent paragraphs that retain the essence and flow of the original content.
-                Please ensure that the summary is clear, concise, and well-organized, capturing the original post's key points and maintaining its tone.
-
-                Summarize the following: 
-
-                {text}
-            """
-        )
-
-        chain = prompt | llm
-        response = chain.invoke(text)
-        print(f"Response: {response}")
-        return response
-
-    except Exception as e:
-        print(f"An error occurred while summarizing the page content: {e}")
-        return ""
-
-def main():
-    keyword = "Mobile development"
-    context = ""
-    
-    links = get_links(keyword)
-    
-    for link in links:
-        text = get_text_content(link)
-        context += "\n" + text
-        
-    blog = generate_blog(keyword, context)
-    save_file(blog, keyword + ".md")
-    print("Success! 🎉")
-
-main()
+save_file(response, keyword + ".md")
