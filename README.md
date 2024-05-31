@@ -7,8 +7,11 @@ Automated Blog Post Creator is a Python application that uses the DuckDuckGo Sea
 - Fetches search results from DuckDuckGo based on a given keyword.
 - Parses the links from the search results.
 - Extracts the text content from each link.
-- Uses OpenAI's GPT-3 model to generate a blog post based on the extracted headings.
+- Generates a blog post based on the given keyword and internet search results as context
 - Saves the generated blog post as a markdown file.
+
+## Architecture
+
 
 ## Installation
 
