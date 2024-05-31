@@ -12,6 +12,9 @@ Automated Blog Post Creator is a Python application that uses the DuckDuckGo Sea
 
 ## Architecture
 
+![indexing architecture](https://github.com/jordan-jakisa/blog_post_writer/assets/72340216/c1b4f7cf-d113-4ae1-9371-a12013931cb6)
+
+![generation architecture](https://github.com/jordan-jakisa/blog_post_writer/assets/72340216/ca11afdd-0933-4ee6-9964-162ad4d5a188)
 
 ## Installation
 
