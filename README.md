@@ -1,6 +1,6 @@
-# Automated Blog Post Creator
+# Blog creator agent
 
-Automated Blog Post Creator is a Python application that uses the DuckDuckGo Search API and OpenAI's GPT-3 model to automate the creation of blog posts.
+Automated blog post creator is a Python application that uses the DuckDuckGo Search API and OpenAI's GPT-3 model to automate the creation of blog posts.
 
 ## Features
 
