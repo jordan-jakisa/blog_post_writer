@@ -1,8 +1,6 @@
 import os
 import re
-import requests
 import bs4
-from bs4 import BeautifulSoup
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
 from langchain_core.prompts import PromptTemplate
@@ -15,7 +13,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 
 os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
-keyword = "AI in education"
+keyword = "Uganda data protection laws"
 
 def parse_links(search_results: str):
     print("-----------------------------------")
@@ -25,17 +23,21 @@ def parse_links(search_results: str):
 
 def save_file(content: str, filename: str):
     print("-----------------------------------")
-    print("Saving file...")
-    with open(filename, 'w') as f:
+    print("Saving file in blogs ...")
+    directory = "blogs"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    filepath = os.path.join(directory, filename)
+    with open(filepath, 'w') as f:
         f.write(content)
-    print(f" 🥳 File saved as {filename}")
+    print(f" 🥳 File saved as {filepath}")
 
 def get_links(keyword):
     try:
         print("-----------------------------------")
         print("Getting links ...")
 
-        wrapper = DuckDuckGoSearchAPIWrapper(max_results=2)
+        wrapper = DuckDuckGoSearchAPIWrapper(max_results=3)
         search = DuckDuckGoSearchResults(api_wrapper=wrapper)
         results = search.run(tool_input=keyword)
 
@@ -79,7 +81,7 @@ llm = ChatOpenAI()
 template = """
         Given the following information, generate a blog post
         
-        Write a full blog post that will rank for the following keywords: {question}
+        Write a full blog post that will rank for the following keywords: {keyword}
         
         Instructions:
         
@@ -109,6 +111,8 @@ template = """
         
         Please ensure proper and standard markdown formatting always.
         
+        Context: {context}
+        
         """
 
 prompt = PromptTemplate.from_template(template=template)
@@ -117,7 +121,7 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 chain = (
-    { "context" : retriever | format_docs, "question" : RunnablePassthrough()}
+    { "context" : retriever | format_docs, "keyword" : RunnablePassthrough()}
     | prompt
     | llm
     | StrOutputParser()
