@@ -54,7 +54,9 @@ OPENAI_API_KEY=<your_openai_api_key>
 python main.py
 ```
 
-3. The script will generate a blog post and save it as a markdown file in the `blogs` directory.
+3. Change the value of the keyword variable at the top of `main.py`
+
+4. The script will generate a blog post and save it as a markdown file in the `blogs` directory. The generated file name is `'your_keywords'.md` 
 
 ## Contributing
 
