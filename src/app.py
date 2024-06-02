@@ -4,34 +4,50 @@ import os
 
 
 with st.sidebar:
-    st.markdown(
-        """
-        ## Blog Post Generator
-        This app generates a blog post based on a keyword.
-        """
+    "## ✍️ Blog Post Generator"
+            
+    web_references = st.number_input(
+        label="Enter number of web references to use",
+        max_value=10,
+        min_value=1,
+        value=3,
     )
-    
-    "[View the source code](https://github.com/jordan-jakisa/blog_post_writer)"
     
     openai_api_key = st.text_input(
         label="OpenAI API Key",
-        placeholder="Enter your OpenAI API key",
         type="password"
         )
+    
+    "You can get your OpenAI API key from [here](https://platform.openai.com/api-keys)"
+        
+    "[View the source code](https://github.com/jordan-jakisa/blog_post_writer)"
+    
     
     os.environ['OPENAI_API_KEY'] = openai_api_key
 
 
 st.title(" ✍️ Blog Post Generator ")
 
-keyword = st.text_input(
-    label= "Enter a keyword: ",
-    placeholder="The impact of AI on content creation"
-    )
+with st.form(key="generate_blog_post"):
+    keyword = st.text_input(label= "Enter a keyword", placeholder="")
 
-if keyword and openai_api_key:
-    response = BlogPostCreator(keyword=keyword).create_blog_post()
-    st.write("### Generated blog post")
-    st.write(response)
-else :
-    st.info("Please enter a keyword and your OpenAI API key")
+    submitted = st.form_submit_button("Generate blog post")
+    
+    if submitted  and not openai_api_key:
+        st.info("Please enter your OpenAI API key")
+        
+    elif submitted and not keyword:
+        st.warning("Please enter a keyword")
+        
+    elif submitted:
+        creator = BlogPostCreator(keyword, web_references)       
+        response = creator.create_blog_post()
+        
+        if isinstance(response, Exception):
+            print(f"An error occurred: {response}")
+            st.info(f"Please try again!")
+            st.error(f"An error occurred: {response}")
+        else:
+            st.write("### Generated blog post")
+            st.write(response)
+            

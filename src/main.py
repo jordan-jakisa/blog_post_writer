@@ -13,15 +13,16 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
         
 class BlogPostCreator:
-        def __init__(self, keyword):
+    def __init__(self, keyword, web_references):
             self.keyword = keyword
+            self.web_references = web_references
 
-        def parse_links(self, search_results: str):
+    def parse_links(self, search_results: str):
             print("-----------------------------------")
             print("Parsing links ...")
             return re.findall(r'link:\s*(https?://[^\],\s]+)', search_results)
 
-        def save_file(self, content: str, filename: str):
+    def save_file(self, content: str, filename: str):
             print("-----------------------------------")
             print("Saving file in blogs ...")
             directory = "blogs"
@@ -32,12 +33,12 @@ class BlogPostCreator:
                 f.write(content)
             print(f" 🥳 File saved as {filepath}")
 
-        def get_links(self):
+    def get_links(self):
             try:
                 print("-----------------------------------")
                 print("Getting links ...")
 
-                wrapper = DuckDuckGoSearchAPIWrapper(max_results=3)
+                wrapper = DuckDuckGoSearchAPIWrapper(max_results=self.web_references)
                 search = DuckDuckGoSearchResults(api_wrapper=wrapper)
                 results = search.run(tool_input=self.keyword)
 
@@ -50,13 +51,13 @@ class BlogPostCreator:
             except Exception as e:
                 print(f"An error occurred while getting links: {e}")
 
-        def create_blog_post(self):
+    def create_blog_post(self):
             try:
                 print("-----------------------------------")
                 print("Creating blog post ...")
 
                 # Define self and docs variables
-                self = BlogPostCreator(keyword=self.keyword)
+                self = BlogPostCreator(keyword=self.keyword, web_references=self.web_references)
                 docs = []
 
                 # Define splitter variable
@@ -88,6 +89,7 @@ class BlogPostCreator:
                 llm = ChatOpenAI()
 
                 template = """
+                
                 Given the following information, generate a blog post
                 
                 Write a full blog post that will rank for the following keywords: {keyword}
@@ -114,13 +116,19 @@ class BlogPostCreator:
 
                 Where applicable, include examples, case studies, or insights that can provide a deeper understanding of the topic.
 
-                Always include discussions on ethical considerations, especially in sections dealing with data privacy, bias, and responsible use.
+                Always include discussions on ethical considerations, especially in sections dealing with data privacy, bias, and responsible use. Only add this where it is applicable.
 
                 In the final section, provide a forward-looking perspective on the topic and a conclusion.
                 
                 Please ensure proper and standard markdown formatting always.
                 
+                Make the blog post sound as human and as engaging as possible, add real world examples and make it as informative as possible.
+                
+                You are a professional blog post writer and SEO expert.
+                
                 Context: {context}
+                
+                Blog: 
                 
                 """
 
@@ -139,4 +147,4 @@ class BlogPostCreator:
                 return chain.invoke(input=self.keyword)
 
             except Exception as e:
-                print(f"An error occurred while creating blog post: {e}")
+                return e
