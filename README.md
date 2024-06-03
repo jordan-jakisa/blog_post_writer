@@ -12,6 +12,8 @@ The blog post creator agent is a python script that uses the DuckDuckGo Search A
 
 ![image](https://github.com/jordan-jakisa/blog_post_writer/assets/72340216/a7d701fe-19d8-4d10-8b99-173366ad60b3)
 
+Try it [here](https://ai-blog-post-generator.streamlit.app/)
+
 
 ## Features
 - Fetches search results from DuckDuckGo based on a given keyword.
