@@ -2,7 +2,6 @@
 
 <div id="top" align="center">
   
-![GitHub](https://img.shields.io/github/license/jordan-jakisa/blog_post_writer)
 ![GitHub Repo stars](https://img.shields.io/github/stars/jordan-jakisa/blog_post_writer?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/jordan-jakisa/blog_post_writer?style=social)
 [![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/JakisaJordan)](https://twitter.com/JakisaJordan)
