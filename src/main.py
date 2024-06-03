@@ -11,6 +11,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+from langchain_astradb import AstraDBVectorStore
         
 class BlogPostCreator:
     def __init__(self, keyword, web_references):
@@ -62,8 +63,8 @@ class BlogPostCreator:
 
                 # Define splitter variable
                 splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=1000,
-                    chunk_overlap=200,
+                    chunk_size=2000,
+                    chunk_overlap=400,
                     add_start_index=True,
                 )
 
@@ -83,7 +84,7 @@ class BlogPostCreator:
                 vector_store = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
 
                 # step 4: retrieval
-                retriever = vector_store.as_retriever(search_type="similarity", search_kwards={"k": 6})
+                retriever = vector_store.as_retriever(search_type="similarity", search_kwards={"k": 10})
 
                 # step 5 : Generation
                 llm = ChatOpenAI()
@@ -99,6 +100,8 @@ class BlogPostCreator:
                 The blog should be properly and beautifully formatted using markdown.
                     
                 The blog title should be SEO optimized.
+                
+                The blog title, should be crafted with the keyword in mind and should be catchy and engaging. But not overly expressive.
                 
                 Each sub-section should have at least 3 paragraphs.
                 
