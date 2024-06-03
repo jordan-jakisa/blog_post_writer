@@ -1,8 +1,6 @@
-from langchain_chroma import Chroma
 import os
 import re
 import bs4
-import streamlit as st
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
 from langchain_core.prompts import PromptTemplate
@@ -11,6 +9,7 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+from langchain_chroma import Chroma
         
 class BlogPostCreator:
     def __init__(self, keyword, web_references):

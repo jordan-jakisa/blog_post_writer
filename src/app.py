@@ -1,8 +1,6 @@
-from langchain_chroma import Chroma
-from main import BlogPostCreator
 import streamlit as st
 import os
-
+from main import BlogPostCreator
 
 with st.sidebar:
     "## ✍️ Blog Post Generator"
