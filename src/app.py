@@ -45,9 +45,8 @@ with st.form(key="generate_blog_post"):
         response = creator.create_blog_post()
         
         if isinstance(response, Exception):
-            print(f"An error occurred: {response}")
-            st.info(f"Please try again!")
-            st.error(f"An error occurred: {response}")
+            st.warning("An error occured. Please try again!")
+            st.error(response)
         else:
             st.write("### Generated blog post")
             st.write(response)
