@@ -4,7 +4,7 @@ import bs4
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
 from langchain_core.prompts import PromptTemplate
-from langchain_openai import OpenAI, OpenAIEmbeddings, ChatOpenAI
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.runnables import RunnablePassthrough
