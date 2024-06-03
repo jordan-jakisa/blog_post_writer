@@ -9,7 +9,7 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import FAISS
         
 class BlogPostCreator:
     def __init__(self, keyword, web_references):
@@ -79,7 +79,7 @@ class BlogPostCreator:
                 splits = splitter.split_documents(docs)
 
                 # step 3: Indexing and vector storage
-                vector_store = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
+                vector_store = FAISS.from_documents(documents=splits, embedding=OpenAIEmbeddings())
 
                 # step 4: retrieval
                 retriever = vector_store.as_retriever(search_type="similarity", search_kwards={"k": 10})
