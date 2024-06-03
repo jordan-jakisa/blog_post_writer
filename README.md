@@ -51,6 +51,10 @@ cd blog-post-creator
 ```
 pip install -r requirements.txt
 ```
+4. Enter the following commands to run the app:
+```
+streamlit run src/app.py
+```
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
