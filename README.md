@@ -1,4 +1,13 @@
-# ✍️ Blog Post Generator
+<h1 align="center">✍️ Blog Post Generator</h1>
+
+<div id="top" align="center">
+  
+![GitHub](https://img.shields.io/github/license/jordan-jakisa/blog_post_writer)
+![GitHub Repo stars](https://img.shields.io/github/stars/jordan-jakisa/blog_post_writer?style=social)
+![GitHub forks](https://img.shields.io/github/forks/jordan-jakisa/blog_post_writer?style=social)
+[![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/JakisaJordan)](https://twitter.com/JakisaJordan)
+
+</div>
 
 The blog post creator agent is a python script that uses the DuckDuckGo Search API and OpenAI's GPT-3 model to automate the creation of blog posts.
 
