@@ -30,11 +30,16 @@ Try it [here](https://ai-blog-post-generator.streamlit.app/)
 - Click on the "Generate blog post" button.
 
 ## Architecture
-The first part of the architecture focuses on collecting the relevant information about a topic, loading the documents, splitting them into easily searchable chunks, embedding the chunks and storing them in a vector store. The purpose of the splitting is to break down the information into small, manageable chunks that can be passed to an LLM without breaking the context boundary, and also to make searching the data and making inferences super fast.
+The agent basically consists of the following components
+
+1. Document loading: The first step which is most necessary is to perform an internet search, and then load the retrieved texts from the internet into a document using a DocumentLoader. 
+2. Splitting the documents: The next step is to split the documents into smaller chunks. Splitting documents enables faster searching and also enables us to fit as much relevant data into the context window of the LLM that we are going to use.
+3. Storage: The split documents have to be stored in a Vector database/Vector store. But before we save the chunks of documents we need to first embed them using OpenAIEmbeddings and then we can store the embeddings into our Vector Store. Embeddings are easily searchable because we can compute similarity scores easily which enables semantic search across the document chunks.
 
 ![indexing architecture](https://github.com/jordan-jakisa/blog_post_writer/assets/72340216/c1b4f7cf-d113-4ae1-9371-a12013931cb6)
 
-The second part takes a keyword for the blog from the user, vectorises it and uses it to search our vector store for similar chunks of data that might be useful or relevant to the keyword. We then pass the retrieved information, along with the prompt, to the LLM to generate a blog post in the context of the keyword.
+4. Retrieval: When  a user enters keywords to generate a blog post for, we want to be able to get the necessary chunks of data from the Vector store which will be relevant to the keywords. This is enabled through the retriever which helps to extract information from the vector store given the keyword.
+5. Blog generation: To generate the blog post, we shall pass the retrieved document chunks and the user keyword/keywords as a prompt to the LLM which generates the final blog post.
 
 ![generation architecture](https://github.com/jordan-jakisa/blog_post_writer/assets/72340216/ca11afdd-0933-4ee6-9964-162ad4d5a188)
 
