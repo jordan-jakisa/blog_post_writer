@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from main import BlogPostCreator
+from blogpostcreator import BlogPostCreator
 
 with st.sidebar:
     "## ✍️ Blog Post Generator"
