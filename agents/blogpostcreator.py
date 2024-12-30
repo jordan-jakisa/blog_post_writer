@@ -82,7 +82,7 @@ class BlogPostCreator:
                 vector_store = FAISS.from_documents(documents=splits, embedding=OpenAIEmbeddings())
 
                 # step 4: retrieval
-                retriever = vector_store.as_retriever(search_type="similarity", search_kwards={"k": 10})
+                retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 10})
 
                 # step 5 : Generation
                 llm = ChatOpenAI(model="got-4o-mini")
