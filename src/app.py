@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+
 from agents.blogpostcreator import BlogPostCreator
 
 with st.sidebar:
@@ -12,7 +13,6 @@ with st.sidebar:
     2. Enter your [OpenAI API key](https://platform.openai.com/api-keys) below.
     3. Enter the keyword you want to generate a blog post for.
     4. Click on the "Generate blog post" button.
-
     """
             
     web_references = st.number_input(
