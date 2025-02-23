@@ -3,6 +3,9 @@ venv/
 .venv/
 .idea/
 /__pycache__/
+**/__pycache__/
+*/__pycache__/
+***/__pycache__/*
 *.pyc
 blogs/
 .idea/
