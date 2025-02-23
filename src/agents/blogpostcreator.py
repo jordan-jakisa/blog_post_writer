@@ -12,8 +12,7 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from prompts import BLOG_CREATOR_PROMPT
-
+from agents.prompts import BLOG_CREATOR_PROMPT
 
 class BlogPostCreator:
     def __init__(self, keyword, number_of_web_references):

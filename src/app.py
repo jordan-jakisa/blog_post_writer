@@ -1,6 +1,5 @@
 import streamlit as st
 import os
-
 from agents.blogpostcreator import BlogPostCreator
 
 with st.sidebar:
@@ -68,11 +67,6 @@ with st.sidebar:
     """
 
     st.divider()
-
-
-    
-    
-
 
 st.title(" ✍️ Blog Post Generator ")
 
